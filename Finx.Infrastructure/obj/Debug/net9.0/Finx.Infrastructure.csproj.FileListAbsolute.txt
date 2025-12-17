@@ -1,0 +1,12 @@
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\bin\Debug\net9.0\Finx.Infrastructure.deps.json
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\bin\Debug\net9.0\Finx.Infrastructure.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\bin\Debug\net9.0\Finx.Infrastructure.pdb
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.AssemblyInfoInputs.cache
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.AssemblyInfo.cs
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.csproj.CoreCompileInputs.cache
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.sourcelink.json
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\refint\Finx.Infrastructure.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\Finx.Infrastructure.pdb
+D:\Repos\Testes\Finx-Test\src\Finx.Infrastructure\obj\Debug\net9.0\ref\Finx.Infrastructure.dll
