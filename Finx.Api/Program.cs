@@ -16,8 +16,8 @@ using Finx.Api.Handlers;
 using Finx.Integrations.Contracts;
 using Finx.Integrations.Adapters;
 using Serilog;
-using Polly;
-using Polly.Extensions.Http;
+using System.Threading;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,9 +53,9 @@ builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 
 builder.Services.AddControllers();
 
-// Health checks
+// Health checks - use a custom health check for the Db
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<FinxDbContext>("FinxDb", tags: new[] { "ready" });
+    .AddCheck<Finx.Api.Health.FinxDbHealthCheck>("FinxDb", tags: new[] { "ready" });
 
 // Register FluentValidation validators explicitly
 builder.Services.AddTransient<CreatePacienteCommandValidator>();
@@ -66,21 +66,12 @@ builder.Services.AddTransient<HistoricoDtoValidator>();
 // Register pipeline behavior for validation
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-// Polly policy for HttpClient
-static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-{
-    return HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-}
-
-// Register Exame clients and FileStorage with resilience
+// Register Exame clients and FileStorage
 builder.Services.AddHttpClient<ExameHttpClient>(client =>
 {
     client.BaseAddress = new System.Uri(builder.Configuration["ExameApi:BaseUrl"] ?? "https://api.exames.example/");
     client.Timeout = TimeSpan.FromSeconds(10);
-})
-.AddPolicyHandler(GetRetryPolicy());
+});
 
 builder.Services.AddSingleton<MockExameClient>();
 builder.Services.AddScoped<IExameClient, ExameClientWithFallback>();
