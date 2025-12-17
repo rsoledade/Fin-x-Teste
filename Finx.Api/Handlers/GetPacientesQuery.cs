@@ -4,5 +4,5 @@ using Finx.Api.DTOs;
 
 namespace Finx.Api.Handlers
 {
-    public record GetPacientesQuery() : IRequest<IEnumerable<PacienteDto>>;
+    public record GetPacientesQuery(int Page = 1, int PageSize = 20) : IRequest<IEnumerable<PacienteDto>>;
 }

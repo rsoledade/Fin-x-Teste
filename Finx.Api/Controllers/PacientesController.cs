@@ -31,9 +31,9 @@ namespace Finx.Api.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
-            var pacientes = await _mediator.Send(new GetPacientesQuery());
+            var pacientes = await _mediator.Send(new GetPacientesQuery(page, pageSize));
             return Ok(pacientes);
         }
 

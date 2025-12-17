@@ -19,7 +19,18 @@ namespace Finx.Api.Handlers
 
         public async Task<IEnumerable<PacienteDto>> Handle(GetPacientesQuery request, CancellationToken cancellationToken)
         {
-            var list = await _repo.ListAsync();
+            // If request has pagination properties use them; otherwise use defaults
+            int page = 1, pageSize = 20;
+            var requestType = request.GetType();
+            var pageProp = requestType.GetProperty("Page");
+            var pageSizeProp = requestType.GetProperty("PageSize");
+            if (pageProp != null && pageSizeProp != null)
+            {
+                page = (int)(pageProp.GetValue(request) ?? 1);
+                pageSize = (int)(pageSizeProp.GetValue(request) ?? 20);
+            }
+
+            var list = await _repo.ListAsync(page, pageSize);
             return list.Select(p => new PacienteDto
             {
                 Id = p.Id,

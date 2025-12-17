@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Finx.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Finx.Infrastructure.Repositories
 {
@@ -29,9 +30,13 @@ namespace Finx.Infrastructure.Repositories
             return await _db.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Paciente>> ListAsync()
+        public async Task<IEnumerable<Paciente>> ListAsync(int page = 1, int pageSize = 20)
         {
-            return await _db.Pacientes.AsNoTracking().ToListAsync();
+            return await _db.Pacientes.AsNoTracking()
+                .OrderBy(p => p.Nome)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public async Task UpdateAsync(Paciente paciente)
