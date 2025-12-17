@@ -10,16 +10,18 @@ services:
     healthcheck:
       test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Your_strong_Password1", "-Q", "SELECT 1"]
       interval: 10s
-      retries: 5
+      retries: 10
 
   api:
     build:
       context: ..
       dockerfile: Finx.Api/Dockerfile
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     environment:
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=finxdb;User Id=sa;Password=Your_strong_Password1;TrustServerCertificate=True;
+      - SKIP_MIGRATIONS=0
     ports:
       - "5000:80"
     restart: on-failure
