@@ -1,0 +1,12 @@
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\bin\Debug\net9.0\Finx.Domain.deps.json
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\bin\Debug\net9.0\Finx.Domain.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\bin\Debug\net9.0\Finx.Domain.pdb
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.AssemblyInfoInputs.cache
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.AssemblyInfo.cs
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.csproj.CoreCompileInputs.cache
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.sourcelink.json
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\refint\Finx.Domain.dll
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\Finx.Domain.pdb
+D:\Repos\Testes\Finx-Test\src\Finx.Domain\obj\Debug\net9.0\ref\Finx.Domain.dll
