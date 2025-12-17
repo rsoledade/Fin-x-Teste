@@ -4,11 +4,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Finx.Api.DTOs;
 using Finx.Api.Handlers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Finx.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PacientesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,6 +21,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create([FromBody] CreatePacienteDto dto)
         {
             var command = new CreatePacienteCommand(dto.Nome, dto.Cpf, dto.DataNascimento, dto.Contato);
@@ -26,11 +29,29 @@ namespace Finx.Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id }, new { id });
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetById(Guid id)
+        [HttpGet]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> GetAll()
         {
-            // placeholder, implement query handler later
-            return Ok(new { id });
+            var pacientes = await _mediator.Send(new GetPacientesQuery());
+            return Ok(pacientes);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var paciente = await _mediator.Send(new GetPacienteByIdQuery(id));
+            if (paciente == null) return NotFound();
+            return Ok(paciente);
+        }
+
+        [HttpGet("{id}/historico")]
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult GetHistorico(Guid id)
+        {
+            // placeholder for historico endpoints (to be implemented)
+            return Ok(Array.Empty<object>());
         }
     }
 }

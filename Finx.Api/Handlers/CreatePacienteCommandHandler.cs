@@ -3,25 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Finx.Domain;
-using Finx.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace Finx.Api.Handlers
 {
     public class CreatePacienteCommandHandler : IRequestHandler<CreatePacienteCommand, Guid>
     {
-        private readonly FinxDbContext _db;
+        private readonly IPacienteRepository _repo;
 
-        public CreatePacienteCommandHandler(FinxDbContext db)
+        public CreatePacienteCommandHandler(IPacienteRepository repo)
         {
-            _db = db;
+            _repo = repo;
         }
 
         public async Task<Guid> Handle(CreatePacienteCommand request, CancellationToken cancellationToken)
         {
             var paciente = new Paciente
             {
-                Id = Guid.NewGuid(),
                 Nome = request.Nome,
                 Cpf = request.Cpf,
                 DataNascimento = request.DataNascimento,
@@ -29,10 +26,8 @@ namespace Finx.Api.Handlers
                 Contato = request.Contato
             };
 
-            _db.Pacientes.Add(paciente);
-            await _db.SaveChangesAsync(cancellationToken);
-
-            return paciente.Id;
+            var id = await _repo.AddAsync(paciente);
+            return id;
         }
     }
 }
