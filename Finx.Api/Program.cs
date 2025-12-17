@@ -1,4 +1,4 @@
-using Finx.Infrastructure;
+﻿using Finx.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -117,7 +117,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Apply migrations or ensure DB created � validate and only apply if pending
+// Apply migrations or ensure DB created — validate and only apply if pending
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();

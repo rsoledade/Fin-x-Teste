@@ -1,4 +1,4 @@
-using Finx.Domain;
+﻿using Finx.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finx.Infrastructure

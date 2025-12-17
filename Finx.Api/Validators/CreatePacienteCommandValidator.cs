@@ -1,4 +1,4 @@
-using FluentValidation;
+ï»¿using FluentValidation;
 using Finx.Api.Handlers;
 using System.Linq;
 
@@ -10,9 +10,9 @@ namespace Finx.Api.Validators
         {
             RuleFor(x => x.Nome).NotEmpty().MaximumLength(200);
             RuleFor(x => x.Cpf)
-                .NotEmpty().WithMessage("CPF é obrigatório")
-                .Must(cpf => IsValidCpf(cpf)).WithMessage("CPF inválido");
-            RuleFor(x => x.DataNascimento).LessThanOrEqualTo(System.DateTime.UtcNow).WithMessage("Data de nascimento inválida");
+                .NotEmpty().WithMessage("CPF Ã© obrigatÃ³rio")
+                .Must(cpf => IsValidCpf(cpf)).WithMessage("CPF invÃ¡lido");
+            RuleFor(x => x.DataNascimento).LessThanOrEqualTo(System.DateTime.UtcNow).WithMessage("Data de nascimento invÃ¡lida");
             RuleFor(x => x.Contato).MaximumLength(200).When(x => !string.IsNullOrEmpty(x.Contato));
         }
 
