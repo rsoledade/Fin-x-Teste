@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Finx.Integrations.Contracts;
-using System;
+﻿using Finx.Integrations.Contracts;
 
 namespace Finx.Integrations.Adapters
 {

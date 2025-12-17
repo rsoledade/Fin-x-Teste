@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Finx.Integrations.Contracts;
+﻿using Finx.Integrations.Contracts;
 
 namespace Finx.Integrations.Adapters
 {

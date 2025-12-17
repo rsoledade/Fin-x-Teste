@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 using Finx.Api.DTOs;
-using Finx.Api.Handlers.Pacientes.Commands;
-using Finx.Api.Handlers.Pacientes.Queries;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Finx.Api.Handlers.Pacientes.Queries;
+using Finx.Api.Handlers.Pacientes.Commands;
 
 namespace Finx.Api.Controllers
 {

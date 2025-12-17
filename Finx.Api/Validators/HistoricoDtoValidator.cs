@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Finx.Api.DTOs;
+﻿using Finx.Api.DTOs;
+using FluentValidation;
 
 namespace Finx.Api.Validators
 {

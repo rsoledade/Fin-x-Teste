@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Finx.Api.Handlers.Pacientes.Commands;
-using System.Linq;
 
 namespace Finx.Api.Validators
 {
