@@ -1,13 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Finx.Domain.Repositories;
+﻿using MediatR;
 using Finx.Api.DTOs;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
-using System;
+using Finx.Domain.Repositories;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Finx.Api.Handlers.Pacientes.Queries
 {
@@ -26,19 +21,21 @@ namespace Finx.Api.Handlers.Pacientes.Queries
         {
             int page = request.Page;
             int pageSize = request.PageSize;
-
             string cacheKey = $"pacientes:page:{page}:size:{pageSize}";
+
             if (_cache != null)
             {
                 var cached = await _cache.GetStringAsync(cacheKey, cancellationToken);
+
                 if (!string.IsNullOrEmpty(cached))
                 {
                     return JsonSerializer.Deserialize<IEnumerable<PacienteDto>>(cached) ?? Array.Empty<PacienteDto>();
                 }
             }
 
-            var list = await _repo.ListAsync(page, pageSize);
-            var dto = list.Select(p => new PacienteDto
+            var listPaciente = await _repo.ListAsync(page, pageSize);
+
+            var pacienteDto = listPaciente.Select(p => new PacienteDto
             {
                 Id = p.Id,
                 Nome = p.Nome,
@@ -54,10 +51,11 @@ namespace Finx.Api.Handlers.Pacientes.Queries
                 {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
                 };
-                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(dto), opts, cancellationToken);
+
+                await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(pacienteDto), opts, cancellationToken);
             }
 
-            return dto;
+            return pacienteDto;
         }
     }
 }

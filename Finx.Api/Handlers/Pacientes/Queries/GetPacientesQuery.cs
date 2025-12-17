@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System.Collections.Generic;
 using Finx.Api.DTOs;
 
 namespace Finx.Api.Handlers.Pacientes.Queries

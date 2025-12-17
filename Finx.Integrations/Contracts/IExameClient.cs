@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-namespace Finx.Integrations.Contracts
+﻿namespace Finx.Integrations.Contracts
 {
     public interface IExameClient
     {

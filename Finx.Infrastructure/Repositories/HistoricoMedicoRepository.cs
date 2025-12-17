@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Finx.Domain.Entities;
+﻿using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finx.Infrastructure.Repositories
 {

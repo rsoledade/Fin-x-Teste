@@ -1,6 +1,5 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Finx.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Finx.Infrastructure;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Finx.Api.Health
 {
