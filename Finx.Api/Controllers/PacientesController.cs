@@ -46,12 +46,24 @@ namespace Finx.Api.Controllers
             return Ok(paciente);
         }
 
-        [HttpGet("{id}/historico")]
+        [HttpPut("{id}")]
         [Authorize(Roles = "Admin,User")]
-        public IActionResult GetHistorico(Guid id)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePacienteDto dto)
         {
-            // placeholder for historico endpoints (to be implemented)
-            return Ok(Array.Empty<object>());
+            var command = new UpdatePacienteCommand(id, dto.Nome, dto.Cpf, dto.DataNascimento, dto.Contato);
+            var result = await _mediator.Send(command);
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var command = new DeletePacienteCommand(id);
+            var result = await _mediator.Send(command);
+            if (!result) return NotFound();
+            return NoContent();
         }
     }
 }

@@ -61,6 +61,7 @@ builder.Services.AddMediatR(typeof(Program).Assembly);
 
 // Register repository implementations
 builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
+builder.Services.AddScoped<IHistoricoMedicoRepository, HistoricoMedicoRepository>();
 
 builder.Services.AddControllers();
 
@@ -70,6 +71,7 @@ builder.Services.AddHealthChecks()
 
 // Register FluentValidation validators explicitly
 builder.Services.AddTransient<CreatePacienteCommandValidator>();
+builder.Services.AddTransient<UpdatePacienteCommandValidator>();
 builder.Services.AddTransient<CreatePacienteDtoValidator>();
 builder.Services.AddTransient<LoginRequestValidator>();
 builder.Services.AddTransient<HistoricoDtoValidator>();
