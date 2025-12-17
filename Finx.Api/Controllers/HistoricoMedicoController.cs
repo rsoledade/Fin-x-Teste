@@ -4,7 +4,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Finx.Api.DTOs;
-using Finx.Api.Handlers;
+using Finx.Api.Handlers.Historico.Commands;
+using Finx.Api.Handlers.Historico.Queries;
 
 namespace Finx.Api.Controllers
 {

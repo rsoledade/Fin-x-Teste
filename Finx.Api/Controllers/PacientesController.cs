@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Finx.Api.DTOs;
-using Finx.Api.Handlers;
+using Finx.Api.Handlers.Pacientes.Commands;
+using Finx.Api.Handlers.Pacientes.Queries;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Finx.Api.Controllers

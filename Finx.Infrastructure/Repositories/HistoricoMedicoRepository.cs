@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Finx.Domain;
+using Finx.Domain.Entities;
+using Finx.Domain.Repositories;
 
 namespace Finx.Infrastructure.Repositories
 {
