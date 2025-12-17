@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Finx.Domain;
+using Finx.Domain.Entities;
+using Finx.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 

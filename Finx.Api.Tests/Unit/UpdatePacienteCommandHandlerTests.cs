@@ -3,9 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
-using Finx.Api.Handlers;
+using Finx.Api.Handlers.Pacientes.Commands;
 using Finx.Api.Validators;
-using Finx.Domain;
+using Finx.Domain.Entities;
+using Finx.Domain.Repositories;
 
 namespace Finx.Api.Tests.Unit
 {
