@@ -7,3 +7,5 @@ obj/
 **/appsettings.*.json
 secrets.json
 .env
+# Ignore docker env files
+docker/.env
