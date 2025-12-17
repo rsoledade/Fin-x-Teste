@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Finx.Api.DTOs;
 using Finx.Api.Services;
+using System;
 
 namespace Finx.Api.Controllers
 {
@@ -22,13 +23,13 @@ namespace Finx.Api.Controllers
             if (req.Username == "admin" && req.Password == "admin")
             {
                 var token = _tokens.GenerateToken(req.Username, "Admin");
-                return Created(string.Empty, new { token });
+                return Created(string.Empty, new { token, expiresInHours = 2 });
             }
 
             if (req.Username == "user" && req.Password == "user")
             {
                 var token = _tokens.GenerateToken(req.Username, "User");
-                return Created(string.Empty, new { token });
+                return Created(string.Empty, new { token, expiresInHours = 2 });
             }
 
             return Unauthorized();

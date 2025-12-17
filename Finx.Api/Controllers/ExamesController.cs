@@ -1,0 +1,29 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Finx.Integrations.Contracts;
+using Microsoft.AspNetCore.Authorization;
+
+namespace Finx.Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class ExamesController : ControllerBase
+    {
+        private readonly IExameClient _exameClient;
+
+        public ExamesController(IExameClient exameClient)
+        {
+            _exameClient = exameClient;
+        }
+
+        [HttpGet("{cpf}")]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> GetByCpf(string cpf)
+        {
+            var exames = await _exameClient.GetExamesByCpfAsync(cpf);
+            if (exames == null) return NoContent();
+            return Ok(exames);
+        }
+    }
+}

@@ -13,6 +13,8 @@ using Finx.Infrastructure.Repositories;
 using Finx.Api.Validators;
 using Finx.Api.DTOs;
 using Finx.Api.Handlers;
+using Finx.Integrations.Contracts;
+using Finx.Integrations.Adapters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,16 @@ builder.Services.AddTransient<HistoricoDtoValidator>();
 // Register pipeline behavior for validation
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+// Register Exame clients and FileStorage
+builder.Services.AddHttpClient<ExameHttpClient>(client =>
+{
+    client.BaseAddress = new System.Uri(builder.Configuration["ExameApi:BaseUrl"] ?? "https://api.exames.example/");
+});
+builder.Services.AddSingleton<MockExameClient>();
+builder.Services.AddScoped<IExameClient, ExameClientWithFallback>();
+// Local file storage for development
+builder.Services.AddSingleton<IFileStorage>(new LocalFileStorage(builder.Configuration["FileStorage:BasePath"] ?? "./filestorage"));
+
 // JWT configuration (use environment variable or user-secrets in real apps)
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "very_secret_key_for_dev_only";
 var key = Encoding.UTF8.GetBytes(jwtSecret);
@@ -68,6 +80,29 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Apply migrations or ensure DB created
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FinxDbContext>();
+    try
+    {
+        // If provider is InMemory, ensure created; otherwise apply migrations
+        if (db.Database.IsInMemory())
+        {
+            db.Database.EnsureCreated();
+        }
+        else
+        {
+            db.Database.Migrate();
+        }
+    }
+    catch (Exception ex)
+    {
+        // Log exception if logging configured; swallow to allow app to start in dev
+        Console.WriteLine($"Database initialization error: {ex.Message}");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
