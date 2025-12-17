@@ -22,9 +22,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Register DbContext (use InMemory for now to simplify local dev)
-builder.Services.AddDbContext<FinxDbContext>(options =>
-    options.UseInMemoryDatabase("FinxDb"));
+// Configure DbContext: prefer SQL Server if connection provided, otherwise InMemory for dev
+var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrWhiteSpace(defaultConn))
+{
+    builder.Services.AddDbContext<FinxDbContext>(options =>
+        options.UseSqlServer(defaultConn));
+}
+else
+{
+    builder.Services.AddDbContext<FinxDbContext>(options =>
+        options.UseInMemoryDatabase("FinxDb"));
+}
 
 // Register MediatR (scan Finx.Api assembly for handlers)
 builder.Services.AddMediatR(typeof(Program).Assembly);
@@ -87,15 +96,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<FinxDbContext>();
     try
     {
-        // If provider is InMemory, ensure created; otherwise apply migrations
-        if (db.Database.IsInMemory())
-        {
-            db.Database.EnsureCreated();
-        }
-        else
-        {
-            db.Database.Migrate();
-        }
+        db.Database.Migrate();
     }
     catch (Exception ex)
     {
