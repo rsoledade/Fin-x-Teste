@@ -18,6 +18,7 @@ using Finx.Integrations.Adapters;
 using Serilog;
 using System.Threading;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,16 @@ else
 {
     builder.Services.AddDbContext<FinxDbContext>(options =>
         options.UseInMemoryDatabase("FinxDb"));
+}
+
+// Redis cache registration if configured
+var redisConfig = builder.Configuration["Redis:Configuration"];
+if (!string.IsNullOrWhiteSpace(redisConfig))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConfig;
+    });
 }
 
 // Register MediatR (scan Finx.Api assembly for handlers)
