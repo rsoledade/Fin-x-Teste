@@ -1,0 +1,6 @@
+# Exclude build artifacts and secrets
+bin/
+obj/
+.vs/
+Dockerfile
+docker/.env

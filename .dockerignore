@@ -1,0 +1,15 @@
+# Files/folders to exclude from Docker build context
+.vs/
+bin/
+obj/
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
+docker/.env
+*.user
+*.suo
+*.vsidx
+**/appsettings.*.json
+secrets.json
+.env

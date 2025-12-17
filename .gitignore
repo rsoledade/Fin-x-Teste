@@ -1,0 +1,17 @@
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.vsidx
+**/appsettings.*.json
+secrets.json
+.env
+# Ignore docker env files
+docker/.env
+
+# AI guidance files (internal use only)
+.ai-guidance.md
+ai-guidance.md
+/CHECKLIST_FINAL.md
+/PASSO_17_COMPLETO.md
