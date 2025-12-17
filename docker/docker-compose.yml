@@ -1,22 +1,44 @@
 version: '3.8'
 services:
-  db:
-    image: postgres:15
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: finx
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${MSSQL_SA_PASSWORD}
     ports:
-      - 5432:5432
-    volumes:
-      - db-data:/var/lib/postgresql/data
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD}", "-Q", "SELECT 1"]
+      interval: 10s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    restart: on-failure
 
   api:
-    build: ../
+    build:
+      context: ..
+      dockerfile: Finx.Api/Dockerfile
     depends_on:
-      - db
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=${MSSQL_DB:-finxdb};User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;
+      - Redis__Configuration=redis:6379
+      - SKIP_MIGRATIONS=0
     ports:
-      - 5000:80
+      - "5000:80"
+    restart: on-failure
 
-volumes:
-  db-data:
+networks:
+  default:
+    external: false

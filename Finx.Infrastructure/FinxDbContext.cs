@@ -1,4 +1,4 @@
-using Finx.Domain;
+﻿using Finx.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finx.Infrastructure
@@ -10,7 +10,7 @@ namespace Finx.Infrastructure
         }
 
         public DbSet<Paciente> Pacientes { get; set; }
-        public DbSet<HistoricoMedico> Historicos { get; set; }
+        public DbSet<HistoricoMedico> HistoricosMedicos { get; set; }
         public DbSet<Hospital> Hospitais { get; set; }
         public DbSet<PacienteHospital> PacienteHospitais { get; set; }
         public DbSet<Agendamento> Agendamentos { get; set; }

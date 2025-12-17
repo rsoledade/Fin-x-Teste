@@ -1,0 +1,374 @@
+{
+  "info": {
+    "name": "Finx API Collection",
+    "description": "Collection completa para testar a API Finx",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paciente_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "historico_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login - User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Health - Ready",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/ready",
+              "host": ["{{base_url}}"],
+              "path": ["health", "ready"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health - Live",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/live",
+              "host": ["{{base_url}}"],
+              "path": ["health", "live"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pacientes",
+      "item": [
+        {
+          "name": "Criar Paciente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('paciente_id', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João da Silva\",\n  \"cpf\": \"52998224725\",\n  \"dataNascimento\": \"1990-05-15T00:00:00Z\",\n  \"contato\": \"(11) 99999-9999\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Pacientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes?page=1&pageSize=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Paciente por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Paciente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João da Silva Santos\",\n  \"cpf\": \"52998224725\",\n  \"dataNascimento\": \"1990-05-15T00:00:00Z\",\n  \"contato\": \"(11) 98888-8888\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Paciente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Histórico Médico",
+      "item": [
+        {
+          "name": "Criar Histórico",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('historico_id', jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnostico\": \"Hipertensão arterial\",\n  \"exame\": \"Eletrocardiograma\",\n  \"prescricao\": \"Losartana 50mg - 1x ao dia\",\n  \"data\": \"2024-01-15T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}/historico",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}", "historico"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Histórico do Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}/historico",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}", "historico"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Histórico",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnostico\": \"Hipertensão arterial controlada\",\n  \"exame\": \"Eletrocardiograma e Holter 24h\",\n  \"prescricao\": \"Losartana 50mg - 1x ao dia + Hidroclorotiazida 25mg\",\n  \"data\": \"2024-01-15T10:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}/historico/{{historico_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}", "historico", "{{historico_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Histórico",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/pacientes/{{paciente_id}}/historico/{{historico_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pacientes", "{{paciente_id}}", "historico", "{{historico_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Exames Externos",
+      "item": [
+        {
+          "name": "Consultar Exames por CPF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/exames/52998224725",
+              "host": ["{{base_url}}"],
+              "path": ["api", "exames", "52998224725"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

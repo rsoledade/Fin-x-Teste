@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Finx.Api.DTOs;
 using Finx.Api.Services;
 using System;
@@ -19,7 +19,7 @@ namespace Finx.Api.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest req)
         {
-            // Simple hardcoded validation for demo � replace with real user store
+            // Simple hardcoded validation for demo — replace with real user store
             if (req.Username == "admin" && req.Password == "admin")
             {
                 var token = _tokens.GenerateToken(req.Username, "Admin");

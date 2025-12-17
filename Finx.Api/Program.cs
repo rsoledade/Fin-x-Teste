@@ -1,4 +1,4 @@
-using Finx.Infrastructure;
+﻿using Finx.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,27 +15,63 @@ using Finx.Api.DTOs;
 using Finx.Api.Handlers;
 using Finx.Integrations.Contracts;
 using Finx.Integrations.Adapters;
+using Serilog;
+using System.Threading;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Serilog
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-// Register DbContext (use InMemory for now to simplify local dev)
-builder.Services.AddDbContext<FinxDbContext>(options =>
-    options.UseInMemoryDatabase("FinxDb"));
+// Configure DbContext: prefer SQL Server if connection provided, otherwise InMemory for dev
+var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrWhiteSpace(defaultConn))
+{
+    builder.Services.AddDbContext<FinxDbContext>(options =>
+        options.UseSqlServer(defaultConn));
+}
+else
+{
+    builder.Services.AddDbContext<FinxDbContext>(options =>
+        options.UseInMemoryDatabase("FinxDb"));
+}
+
+// Redis cache registration if configured
+var redisConfig = builder.Configuration["Redis:Configuration"];
+if (!string.IsNullOrWhiteSpace(redisConfig))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConfig;
+    });
+}
 
 // Register MediatR (scan Finx.Api assembly for handlers)
 builder.Services.AddMediatR(typeof(Program).Assembly);
 
 // Register repository implementations
 builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
+builder.Services.AddScoped<IHistoricoMedicoRepository, HistoricoMedicoRepository>();
 
 builder.Services.AddControllers();
 
+// Health checks - use a custom health check for the Db
+builder.Services.AddHealthChecks()
+    .AddCheck<Finx.Api.Health.FinxDbHealthCheck>("FinxDb", tags: new[] { "ready" });
+
 // Register FluentValidation validators explicitly
 builder.Services.AddTransient<CreatePacienteCommandValidator>();
+builder.Services.AddTransient<UpdatePacienteCommandValidator>();
 builder.Services.AddTransient<CreatePacienteDtoValidator>();
 builder.Services.AddTransient<LoginRequestValidator>();
 builder.Services.AddTransient<HistoricoDtoValidator>();
@@ -47,7 +83,9 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddHttpClient<ExameHttpClient>(client =>
 {
     client.BaseAddress = new System.Uri(builder.Configuration["ExameApi:BaseUrl"] ?? "https://api.exames.example/");
+    client.Timeout = TimeSpan.FromSeconds(10);
 });
+
 builder.Services.AddSingleton<MockExameClient>();
 builder.Services.AddScoped<IExameClient, ExameClientWithFallback>();
 // Local file storage for development
@@ -81,26 +119,62 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Apply migrations or ensure DB created
+// Apply migrations or ensure DB created — validate and only apply if pending
 using (var scope = app.Services.CreateScope())
 {
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var db = scope.ServiceProvider.GetRequiredService<FinxDbContext>();
+
     try
     {
-        // If provider is InMemory, ensure created; otherwise apply migrations
-        if (db.Database.IsInMemory())
+        // Wait for DB to be available (only for non-inmemory providers)
+        if (!db.Database.IsInMemory())
         {
-            db.Database.EnsureCreated();
+            var tries = 0;
+            var maxTries = 10;
+            var delay = TimeSpan.FromSeconds(5);
+            while (tries < maxTries)
+            {
+                try
+                {
+                    if (db.Database.CanConnect()) break;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Database not ready yet");
+                }
+                tries++;
+                Thread.Sleep(delay);
+            }
+
+            if (!db.Database.CanConnect())
+            {
+                logger.LogWarning("Database unavailable after retries; skipping migrations");
+            }
+            else
+            {
+                var pending = db.Database.GetPendingMigrations();
+                if (pending != null && pending.Any())
+                {
+                    logger.LogInformation("Applying {Count} pending migrations", pending.Count());
+                    db.Database.Migrate();
+                    logger.LogInformation("Migrations applied");
+                }
+                else
+                {
+                    logger.LogInformation("No pending migrations to apply");
+                }
+            }
         }
         else
         {
-            db.Database.Migrate();
+            // InMemory ensure created
+            db.Database.EnsureCreated();
         }
     }
     catch (Exception ex)
     {
-        // Log exception if logging configured; swallow to allow app to start in dev
-        Console.WriteLine($"Database initialization error: {ex.Message}");
+        logger.LogError(ex, "Error while applying migrations");
     }
 }
 
@@ -117,6 +191,11 @@ app.UseMiddleware<ValidationExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map health checks
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions { Predicate = hc => hc.Tags.Contains("ready") });
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions { Predicate = _ => false });
+
 app.MapControllers();
 
 app.Run();
