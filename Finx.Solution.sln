@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finx.Infrastructure", "Finx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finx.Integrations", "Finx.Integrations\Finx.Integrations.csproj", "{E8619EAF-C849-464A-8D8F-C61F6F27C377}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finx.Api.Tests", "Finx.Api.Tests\Finx.Api.Tests.csproj", "{C510A4BB-742C-42B3-AD7C-2C2260280ABB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finx.Api.Tests", "Finx.Tests\\Finx.Tests.csproj", "{C510A4BB-742C-42B3-AD7C-2C2260280ABB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

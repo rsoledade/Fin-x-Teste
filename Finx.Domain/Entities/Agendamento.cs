@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Finx.Domain.Entities
+﻿namespace Finx.Domain.Entities
 {
     public class Agendamento
     {

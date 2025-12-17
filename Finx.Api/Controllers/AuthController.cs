@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Finx.Api.DTOs;
+﻿using Finx.Api.DTOs;
 using Finx.Api.Services;
-using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Finx.Api.Controllers
 {

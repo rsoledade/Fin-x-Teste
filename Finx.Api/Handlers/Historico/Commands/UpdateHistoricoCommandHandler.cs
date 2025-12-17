@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Finx.Domain.Repositories;
 
 namespace Finx.Api.Handlers.Historico.Commands

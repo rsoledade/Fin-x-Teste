@@ -1,9 +1,5 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using MediatR;
 using FluentValidation;
-using MediatR;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Finx.Api.Behaviors
 {

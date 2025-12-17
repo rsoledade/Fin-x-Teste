@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Finx.Integrations.Contracts
+﻿namespace Finx.Integrations.Contracts
 {
     public class ExameDto
     {

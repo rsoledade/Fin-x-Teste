@@ -1,9 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace Finx.Api.Middleware
 {

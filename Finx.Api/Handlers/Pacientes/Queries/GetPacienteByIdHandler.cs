@@ -1,8 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Finx.Domain.Repositories;
+﻿using MediatR;
 using Finx.Api.DTOs;
+using Finx.Domain.Repositories;
 
 namespace Finx.Api.Handlers.Pacientes.Queries
 {

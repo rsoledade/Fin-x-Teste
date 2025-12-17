@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Finx.Api.DTOs
+﻿namespace Finx.Api.DTOs
 {
     public class CreateHistoricoDto
     {

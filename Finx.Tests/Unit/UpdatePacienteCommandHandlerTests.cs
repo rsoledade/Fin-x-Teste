@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
-using Finx.Api.Handlers.Pacientes.Commands;
+﻿using Moq;
 using Finx.Api.Validators;
 using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
+using Finx.Api.Handlers.Pacientes.Commands;
 
 namespace Finx.Api.Tests.Unit
 {
@@ -26,6 +22,7 @@ namespace Finx.Api.Tests.Unit
                 DataCadastro = DateTime.UtcNow,
                 Contato = "(11) 99999-9999"
             };
+
             mockRepo.Setup(r => r.GetByIdAsync(existingPaciente.Id)).ReturnsAsync(existingPaciente);
             mockRepo.Setup(r => r.UpdateAsync(It.IsAny<Paciente>())).Returns(Task.CompletedTask);
 
