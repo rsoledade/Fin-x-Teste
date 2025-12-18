@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Finx.Integrations.Contracts;
 using Microsoft.AspNetCore.Authorization;
+using Finx.Api.Configuration;
 
 namespace Finx.Api.Controllers
 {
@@ -17,7 +18,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpGet("{cpf}")]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> GetByCpf(string cpf)
         {
             var exames = await _exameClient.GetExamesByCpfAsync(cpf);

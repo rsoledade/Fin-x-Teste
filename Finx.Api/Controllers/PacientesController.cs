@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Finx.Application.Handlers.Pacientes.Queries;
 using Finx.Application.Handlers.Pacientes.Commands;
+using Finx.Api.Configuration;
 
 namespace Finx.Api.Controllers
 {
@@ -20,7 +21,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> Create([FromBody] CreatePacienteRequest req)
         {
             var command = new CreatePacienteCommand(req.Nome, req.Cpf, req.DataNascimento, req.Contato);
@@ -29,7 +30,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> GetAll()
         {
             var pacientes = await _mediator.Send(new GetPacientesQuery());
@@ -37,7 +38,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var paciente = await _mediator.Send(new GetPacienteByIdQuery(id));
@@ -46,7 +47,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePacienteRequest req)
         {
             var command = new UpdatePacienteCommand(id, req.Nome, req.DataNascimento, req.Contato);
@@ -55,7 +56,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _mediator.Send(new DeletePacienteCommand(id));

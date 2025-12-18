@@ -3,6 +3,7 @@ using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
 using MediatRUnit = MediatR.Unit;
 using Finx.Application.Handlers.Pacientes.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace Finx.Api.Tests.Unit
 {
@@ -13,6 +14,7 @@ namespace Finx.Api.Tests.Unit
         {
             // Arrange
             var mockRepo = new Mock<IPacienteRepository>();
+            var mockLogger = new Mock<ILogger<DeletePacienteCommandHandler>>();
 
             var existingPaciente = new Paciente
             {
@@ -26,7 +28,7 @@ namespace Finx.Api.Tests.Unit
 
             mockRepo.Setup(r => r.DeleteAsync(existingPaciente.Id)).Returns(Task.CompletedTask);
 
-            var handler = new DeletePacienteCommandHandler(mockRepo.Object);
+            var handler = new DeletePacienteCommandHandler(mockRepo.Object, mockLogger.Object);
             var command = new DeletePacienteCommand(existingPaciente.Id);
 
             // Act
