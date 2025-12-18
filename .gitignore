@@ -7,3 +7,5 @@ obj/
 **/appsettings.*.json
 secrets.json
 .env
+/PASSO_17_COMPLETO.md
+/CHECKLIST_FINAL.md
