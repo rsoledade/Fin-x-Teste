@@ -1,8 +1,8 @@
 ﻿using Moq;
-using Finx.Api.Validators;
 using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
-using Finx.Api.Handlers.Pacientes.Commands;
+using Finx.Application.Validators;
+using Finx.Application.Handlers.Pacientes.Commands;
 
 namespace Finx.Api.Tests.Unit
 {

@@ -76,7 +76,7 @@ src/
 ├── Finx.Infrastructure/   # Camada de infraestrutura (EF Core, Repositórios)
 ├── Finx.Integrations/     # Integrações externas (Contratos, Adaptadores)
 ├── Finx.Scripts/          # Scripts SQL (unificação, migrations)
-└── Finx.Api.Tests/        # Testes unitários e de integração
+└── Finx.Tests/            # Testes unitários e de integração
 ```
 
 ### Padrões Implementados
@@ -99,6 +99,7 @@ src/
 - **Polly** (Resiliência e retry policies)
 - **xUnit + Moq** (Testes)
 - **Docker & Docker Compose**
+- **Swagger (Swashbuckle)**
 
 ---
 
@@ -106,30 +107,32 @@ src/
 
 ### Opção 1: Via Docker (Recomendado para Avaliadores)
 
-1. **Configure as variáveis de ambiente**:
+Esta opção **não exige SQL Server instalado na máquina**, pois o banco sobe via container.
+
+1. **Suba a stack completa** (na raiz do repositório, onde está o `docker-compose.yml`):
    ```bash
-   cp docker/.env.example docker/.env
-   # Edite docker/.env e defina MSSQL_SA_PASSWORD com senha forte
+   docker compose up --build
    ```
 
-2. **Suba a stack completa**:
-   ```bash
-   cd docker
-   docker-compose up --build
-   ```
+2. **Acesse**:
+   - API: `http://localhost:8080`
+   - Swagger UI: `http://localhost:8080/swagger`
 
-3. **Acesse a API**:
-   - API: `http://localhost:5000`
-   - Swagger: `http://localhost:5000/swagger`
-   - Health Checks:
-     - Readiness: `http://localhost:5000/health/ready`
-     - Liveness: `http://localhost:5000/health/live`
+#### O que acontece no startup
+
+- O serviço `sqlserver` (SQL Server 2022 Developer) sobe primeiro.
+- O serviço `finx-api` aguarda o SQL Server ficar pronto.
+- A API aplica automaticamente:
+  - criação do banco (caso não exista)
+  - migrations pendentes (criação da estrutura/tabelas)
+
+> Observação: no Docker a connection string é injetada via variável de ambiente (`ConnectionStrings__DefaultConnection`).
 
 ### Opção 2: Execução Local
 
 1. **Pré-requisitos**:
    - .NET 9.0 SDK
-   - SQL Server (ou use InMemory DB para desenvolvimento)
+   - SQL Server acessível na máquina (ou ajuste a connection string)
 
 2. **Restore e Build**:
    ```bash
@@ -140,16 +143,12 @@ src/
 
 3. **Execute a API**:
    ```bash
-   dotnet run --project Finx.Api
+   dotenv run -e ../.env dotnet run --project Finx.Api
    ```
-   - Por padrão, usa InMemory DB se `ConnectionStrings:DefaultConnection` não estiver configurada
 
-4. **Configure User Secrets (Opcional)**:
-   ```bash
-   cd Finx.Api
-   dotnet user-secrets set "Jwt:Secret" "sua-chave-secreta-aqui"
-   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "sua-connection-string"
-   ```
+- Swagger UI: `http://localhost:5140/swagger` (ou `https://localhost:7109/swagger`)
+
+Em desenvolvimento local, a connection string está em `Finx.Api/appsettings.Development.json`.
 
 ---
 
@@ -175,7 +174,7 @@ dotnet test
 
 ### Estrutura de Testes
 ```
-Finx.Api.Tests/
+Finx.Tests/
 ├── Unit/
 │   ├── CreatePacienteCommandHandlerTests.cs
 │   ├── UpdatePacienteCommandHandlerTests.cs
@@ -269,7 +268,8 @@ Importe a collection em `docs/postman_collection.json` para testar todos os endp
 
 ### Swagger/OpenAPI
 
-Acesse `http://localhost:5000/swagger` para documentação interativa da API.
+- Local: `http://localhost:5140/swagger`
+- Docker: `http://localhost:8080/swagger`
 
 ### Diagramas
 
