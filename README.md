@@ -53,9 +53,12 @@ Localização: `src/Finx.Integrations/` e `docs/`
   - Observações sobre segurança (TLS, autenticação, mapeamento de IDs)
 
 #### ✅ Desafio 3: Unificação de Pacientes Duplicados
-Localização: `src/Finx.Scripts/unify_pacientes.sql`
+Implementado via **migration EF Core** (data migration) no projeto `Finx.Infrastructure`.
 
-- **Script SQL Idempotente** que:
+- **Migration**:
+  - `src/Finx.Infrastructure/Migrations/20251217_UnifyPatientsMigration.cs`
+
+- **O que a migration faz**:
   - Identifica duplicatas por CPF
   - Identifica duplicatas por código do paciente no hospital
   - Mantém registro com `DataCadastro` mais recente (sobrevivente)
@@ -75,7 +78,7 @@ src/
 ├── Finx.Domain/           # Camada de domínio (Entidades, Interfaces)
 ├── Finx.Infrastructure/   # Camada de infraestrutura (EF Core, Repositórios)
 ├── Finx.Integrations/     # Integrações externas (Contratos, Adaptadores)
-├── Finx.Scripts/          # Scripts SQL (unificação, migrations)
+├── Finx.Scripts/          # Scripts SQL (schema/seed)
 └── Finx.Tests/            # Testes unitários e de integração
 ```
 
@@ -203,13 +206,10 @@ dotnet ef database update --project Finx.Infrastructure --startup-project Finx.A
 dotnet ef migrations add NomeDaMigration --project Finx.Infrastructure --startup-project Finx.Api
 ```
 
-### Script de Unificação
+### Unificação (Desafio 3)
 
-Execute o script SQL para unificar pacientes duplicados:
-```bash
-# Localização: src/Finx.Scripts/unify_pacientes.sql
-# Execute no seu SQL Server Management Studio ou via CLI
-```
+A unificação de pacientes duplicados é aplicada via migration:
+- `src/Finx.Infrastructure/Migrations/20251217_UnifyPatientsMigration.cs`
 
 ---
 
@@ -290,7 +290,6 @@ Consulte `docs/` para:
 - ✅ Docker e docker-compose funcionais
 - ✅ Health checks implementados
 - ✅ Validações de CPF testadas
-- ✅ Script SQL idempotente documentado
 
 ---
 
