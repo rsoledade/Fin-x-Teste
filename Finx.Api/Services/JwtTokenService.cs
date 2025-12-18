@@ -31,7 +31,7 @@ namespace Finx.Api.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, subject),
-                new Claim("roles", role)
+                new Claim(ClaimTypes.Role, role)
             };
 
             var key = new SymmetricSecurityKey(_keyBytes);

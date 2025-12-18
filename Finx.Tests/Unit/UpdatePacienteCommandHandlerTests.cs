@@ -3,6 +3,7 @@ using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
 using MediatRUnit = MediatR.Unit;
 using Finx.Application.Handlers.Pacientes.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace Finx.Api.Tests.Unit
 {
@@ -13,6 +14,7 @@ namespace Finx.Api.Tests.Unit
         {
             // Arrange
             var mockRepo = new Mock<IPacienteRepository>();
+            var mockLogger = new Mock<ILogger<UpdatePacienteCommandHandler>>();
             var existingPaciente = new Paciente
             {
                 Id = Guid.NewGuid(),
@@ -26,7 +28,7 @@ namespace Finx.Api.Tests.Unit
             mockRepo.Setup(r => r.GetByIdAsync(existingPaciente.Id)).ReturnsAsync(existingPaciente);
             mockRepo.Setup(r => r.UpdateAsync(It.IsAny<Paciente>())).Returns(Task.CompletedTask);
 
-            var handler = new UpdatePacienteCommandHandler(mockRepo.Object);
+            var handler = new UpdatePacienteCommandHandler(mockRepo.Object, mockLogger.Object);
             var command = new UpdatePacienteCommand(existingPaciente.Id, "Joao Santos", DateTime.UtcNow.AddYears(-31), "(11) 88888-8888");
 
             // Act
@@ -43,10 +45,11 @@ namespace Finx.Api.Tests.Unit
         {
             // Arrange
             var mockRepo = new Mock<IPacienteRepository>();
+            var mockLogger = new Mock<ILogger<UpdatePacienteCommandHandler>>();
             var nonExistentId = Guid.NewGuid();
             mockRepo.Setup(r => r.GetByIdAsync(nonExistentId)).ReturnsAsync((Paciente?)null);
 
-            var handler = new UpdatePacienteCommandHandler(mockRepo.Object);
+            var handler = new UpdatePacienteCommandHandler(mockRepo.Object, mockLogger.Object);
             var command = new UpdatePacienteCommand(nonExistentId, "Joao Santos", DateTime.UtcNow.AddYears(-31), "(11) 88888-8888");
 
             // Act

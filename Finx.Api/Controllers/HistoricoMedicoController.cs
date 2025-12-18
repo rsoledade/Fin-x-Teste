@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Finx.Api.Model;
+using Finx.Api.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Finx.Application.Handlers.Historico.Queries;
@@ -20,7 +21,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> Create(Guid pacienteId, [FromBody] CreateHistoricoRequest createHistoricoRequest)
         {
             var command = new CreateHistoricoCommand(pacienteId, createHistoricoRequest.Diagnostico, createHistoricoRequest.Exame, createHistoricoRequest.Prescricao, createHistoricoRequest.Data);
@@ -29,7 +30,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> GetByPacienteId(Guid pacienteId)
         {
             var historicos = await _mediator.Send(new GetHistoricosByPacienteIdQuery(pacienteId));
@@ -37,7 +38,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOrUser)]
         public async Task<IActionResult> Update(Guid pacienteId, Guid id, [FromBody] CreateHistoricoRequest createHistoricoRequest)
         {
             var command = new UpdateHistoricoCommand(id, pacienteId, createHistoricoRequest.Diagnostico, createHistoricoRequest.Exame, createHistoricoRequest.Prescricao, createHistoricoRequest.Data);
@@ -46,7 +47,7 @@ namespace Finx.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = AuthorizationPolicies.AdminOnly)]
         public async Task<IActionResult> Delete(Guid pacienteId, Guid id)
         {
             await _mediator.Send(new DeleteHistoricoCommand(pacienteId, id));

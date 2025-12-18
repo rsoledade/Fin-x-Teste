@@ -3,6 +3,7 @@ using Finx.Domain.Entities;
 using Finx.Domain.Repositories;
 using Finx.Application.Validators;
 using Finx.Application.Handlers.Pacientes.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace Finx.Api.Tests.Unit
 {
@@ -13,10 +14,11 @@ namespace Finx.Api.Tests.Unit
         {
             // Arrange
             var mockRepo = new Mock<IPacienteRepository>();
+            var mockLogger = new Mock<ILogger<CreatePacienteCommandHandler>>();
             var expectedId = Guid.NewGuid();
             mockRepo.Setup(r => r.AddAsync(It.IsAny<Paciente>())).ReturnsAsync(expectedId);
 
-            var handler = new CreatePacienteCommandHandler(mockRepo.Object);
+            var handler = new CreatePacienteCommandHandler(mockRepo.Object, mockLogger.Object);
             var command = new CreatePacienteCommand("Joao Silva", "12345678909", DateTime.UtcNow.AddYears(-30), "(11) 99999-9999");
 
             // Act
