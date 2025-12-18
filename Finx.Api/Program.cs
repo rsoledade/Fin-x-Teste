@@ -1,41 +1,43 @@
+﻿using Finx.Api.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.AddLoggingConfiguration();
+
+builder.Services.AddSwaggerConfiguration();
+
+builder.Services.AddControllers();
+builder.Services.AddDatabaseConfiguration(builder.Configuration);
+builder.Services.AddCacheConfiguration(builder.Configuration);
+builder.Services.AddMediatRConfiguration();
+builder.Services.AddRepositories();
+builder.Services.AddIntegrations(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddHealthCheckConfiguration();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+
 }
 
+app.UseSwaggerConfiguration();
 app.UseHttpsRedirection();
+app.UseCustomMiddleware();
+app.UseAuthentication();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Map endpoints
+app.MapControllers();
+app.MapHealthCheckEndpoints();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// Apply database migrations after DI is built and before serving requests
+await app.UseDatabaseMigration();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+// Make Program class accessible for integration tests
+public partial class Program { }
+
+
