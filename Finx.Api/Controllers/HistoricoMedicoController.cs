@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using Finx.Api.DTOs;
+using Finx.Api.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Finx.Api.Handlers.Historico.Queries;
-using Finx.Api.Handlers.Historico.Commands;
+using Finx.Application.Handlers.Historico.Queries;
+using Finx.Application.Handlers.Historico.Commands;
 
 namespace Finx.Api.Controllers
 {
@@ -21,9 +21,9 @@ namespace Finx.Api.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> Create(Guid pacienteId, [FromBody] CreateHistoricoDto dto)
+        public async Task<IActionResult> Create(Guid pacienteId, [FromBody] CreateHistoricoRequest createHistoricoRequest)
         {
-            var command = new CreateHistoricoCommand(pacienteId, dto.Diagnostico, dto.Exame, dto.Prescricao, dto.Data);
+            var command = new CreateHistoricoCommand(pacienteId, createHistoricoRequest.Diagnostico, createHistoricoRequest.Exame, createHistoricoRequest.Prescricao, createHistoricoRequest.Data);
             var id = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetByPacienteId), new { pacienteId }, new { id });
         }
@@ -38,11 +38,10 @@ namespace Finx.Api.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,User")]
-        public async Task<IActionResult> Update(Guid pacienteId, Guid id, [FromBody] CreateHistoricoDto dto)
+        public async Task<IActionResult> Update(Guid pacienteId, Guid id, [FromBody] CreateHistoricoRequest createHistoricoRequest)
         {
-            var command = new UpdateHistoricoCommand(id, dto.Diagnostico, dto.Exame, dto.Prescricao, dto.Data);
-            var result = await _mediator.Send(command);
-            if (!result) return NotFound();
+            var command = new UpdateHistoricoCommand(id, pacienteId, createHistoricoRequest.Diagnostico, createHistoricoRequest.Exame, createHistoricoRequest.Prescricao, createHistoricoRequest.Data);
+            await _mediator.Send(command);
             return NoContent();
         }
 
@@ -50,9 +49,7 @@ namespace Finx.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid pacienteId, Guid id)
         {
-            var command = new DeleteHistoricoCommand(id);
-            var result = await _mediator.Send(command);
-            if (!result) return NotFound();
+            await _mediator.Send(new DeleteHistoricoCommand(pacienteId, id));
             return NoContent();
         }
     }

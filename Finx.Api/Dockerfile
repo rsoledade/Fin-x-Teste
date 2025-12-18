@@ -10,7 +10,8 @@ COPY ["Finx.Api/Finx.Api.csproj", "Finx.Api/"]
 COPY ["Finx.Domain/Finx.Domain.csproj", "Finx.Domain/"]
 COPY ["Finx.Infrastructure/Finx.Infrastructure.csproj", "Finx.Infrastructure/"]
 COPY ["Finx.Integrations/Finx.Integrations.csproj", "Finx.Integrations/"]
-COPY ["Finx.Api.Tests/Finx.Api.Tests.csproj", "Finx.Api.Tests/"]
+COPY ["Finx.Application/Finx.Application.csproj", "Finx.Application/"]
+COPY ["Finx.Tests/Finx.Tests.csproj", "Finx.Tests/"]
 
 # Restore dependencies
 RUN dotnet restore "Finx.Api/Finx.Api.csproj"
@@ -28,9 +29,9 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Set environment variables
-ENV ASPNETCORE_URLS=http://+:80
-ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Development
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "Finx.Api.dll"]

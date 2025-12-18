@@ -6,9 +6,7 @@ namespace Finx.Api.Configuration
     {
         public static IServiceCollection AddMediatRConfiguration(this IServiceCollection services)
         {
-            // Register MediatR (scan Finx.Api assembly for handlers)
-            services.AddMediatR(typeof(Program).Assembly);
-
+            services.AddMediatR(typeof(Program).Assembly, typeof(Finx.Application.Handlers.Pacientes.Commands.CreatePacienteCommand).Assembly);
             return services;
         }
     }

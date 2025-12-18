@@ -9,8 +9,15 @@ namespace Finx.Api.Configuration
     {
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSecret = configuration["Jwt:Secret"] ?? "very_secret_key_for_dev_only";
-            var key = Encoding.UTF8.GetBytes(jwtSecret);
+            var jwtSecret = configuration["Jwt:Secret"];
+
+            // Development-safe fallback: HS256 requires >= 32 bytes.
+            // In production, configure Jwt:Secret via appsettings/secret store/env var.
+            if (string.IsNullOrWhiteSpace(jwtSecret))
+                jwtSecret = "very_secret_key_for_dev_only_32_bytes_min!";
+
+            jwtSecret = jwtSecret.Trim();
+            var keyBytes = TryReadBase64(jwtSecret) ?? Encoding.UTF8.GetBytes(jwtSecret);
 
             services.AddSingleton(new JwtTokenService(jwtSecret));
 
@@ -28,13 +35,25 @@ namespace Finx.Api.Configuration
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
                 };
             });
 
             services.AddAuthorization();
 
             return services;
+        }
+
+        private static byte[]? TryReadBase64(string value)
+        {
+            try
+            {
+                return Convert.FromBase64String(value);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
     }
 }

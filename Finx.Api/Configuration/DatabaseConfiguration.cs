@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Finx.Infrastructure;
+﻿using Finx.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finx.Api.Configuration
 {
@@ -8,7 +8,7 @@ namespace Finx.Api.Configuration
         public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             var defaultConn = configuration.GetConnectionString("DefaultConnection");
-            
+
             if (!string.IsNullOrWhiteSpace(defaultConn))
             {
                 services.AddDbContext<FinxDbContext>(options =>
@@ -31,48 +31,55 @@ namespace Finx.Api.Configuration
 
             try
             {
-                if (!db.Database.IsInMemory())
+                if (db.Database.IsInMemory())
                 {
-                    var tries = 0;
-                    var maxTries = 10;
-                    var delay = TimeSpan.FromSeconds(5);
-                    
-                    while (tries < maxTries)
+                    await db.Database.EnsureCreatedAsync();
+                    return app;
+                }
+
+                var tries = 0;
+                var maxTries = 10;
+                var delay = TimeSpan.FromSeconds(5);
+
+                while (tries < maxTries)
+                {
+                    try
                     {
-                        try
+                        if (await db.Database.CanConnectAsync())
                         {
-                            if (db.Database.CanConnect()) break;
+                            break;
                         }
-                        catch (Exception ex)
-                        {
-                            logger.LogWarning(ex, "Database not ready yet");
-                        }
-                        tries++;
-                        await Task.Delay(delay);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Database not ready yet");
                     }
 
-                    if (!db.Database.CanConnect())
-                    {
-                        logger.LogWarning("Database unavailable after retries; skipping migrations");
-                    }
-                    else
-                    {
-                        var pending = db.Database.GetPendingMigrations();
-                        if (pending != null && pending.Any())
-                        {
-                            logger.LogInformation("Applying {Count} pending migrations", pending.Count());
-                            await db.Database.MigrateAsync();
-                            logger.LogInformation("Migrations applied");
-                        }
-                        else
-                        {
-                            logger.LogInformation("No pending migrations to apply");
-                        }
-                    }
+                    tries++;
+                    await Task.Delay(delay);
+                }
+
+                // If the database doesn't exist yet, CanConnect will keep failing.
+                // Ensure it's created before applying migrations.
+                try
+                {
+                    await db.Database.EnsureCreatedAsync();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "EnsureCreated failed (it may already exist or require permissions). Will still attempt migrations.");
+                }
+
+                var pending = await db.Database.GetPendingMigrationsAsync();
+                if (pending.Any())
+                {
+                    logger.LogInformation("Applying {Count} pending migrations", pending.Count());
+                    await db.Database.MigrateAsync();
+                    logger.LogInformation("Migrations applied");
                 }
                 else
                 {
-                    await db.Database.EnsureCreatedAsync();
+                    logger.LogInformation("No pending migrations to apply");
                 }
             }
             catch (Exception ex)
