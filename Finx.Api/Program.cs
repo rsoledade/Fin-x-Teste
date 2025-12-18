@@ -4,9 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddLoggingConfiguration();
 
-// Swagger UI (Swashbuckle)
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfiguration();
 
 builder.Services.AddControllers();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
@@ -21,10 +19,10 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
 }
 
+app.UseSwaggerConfiguration();
 app.UseHttpsRedirection();
 app.UseCustomMiddleware();
 app.UseAuthentication();
